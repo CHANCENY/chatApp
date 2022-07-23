@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/ic">
+        <file>icons/chat.png</file>
+        <file>icons/check-mark.png</file>
+        <file>icons/delete.png</file>
+        <file>icons/diskette.png</file>
+        <file>icons/email.png</file>
+        <file>icons/gmail.png</file>
+        <file>icons/photo.png</file>
+        <file>icons/send-message.png</file>
+        <file>icons/telephone.png</file>
+        <file>icons/user.png</file>
+        <file>icons/menu.png</file>
+        <file>icons/note.png</file>
+        <file>icons/chat-room.png</file>
+        <file>icons/icons8-tick-box-48.png</file>
+        <file>icons/icons8-old.png</file>
+        <file>icons/icons8-inbox-32.png</file>
+        <file>icons/icons8-sent-48.png</file>
+        <file>icons/add-contact.png</file>
+        <file>icons/application.png</file>
+        <file>icons/icons8-edit-profile-48.png</file>
+        <file>icons/pleasewait.jpg</file>
+    </qresource>
+</RCC>
