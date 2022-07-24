@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
         DBFunctions owner;
         owner.connectionSetUp();
         owner.tablesMaker();
+        mythread.flagging(2);
         mythread.connection();
         mythread.start();
 

@@ -21,5 +21,8 @@
         <file>icons/application.png</file>
         <file>icons/icons8-edit-profile-48.png</file>
         <file>icons/pleasewait.jpg</file>
+        <file>icons/cloud-computing.png</file>
+        <file>icons/computing-cloud.png</file>
+        <file>icons/link.png</file>
     </qresource>
 </RCC>

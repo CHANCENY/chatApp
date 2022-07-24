@@ -42,6 +42,9 @@ public slots:
     void restartCheckContacts();
     void validateSettings();
     void onActiveUpdate();
+    void statuscheck();
+    QString removeAllSpecial(QString line);
+    QString removeAllSpecial2(QString line);
 
 
 
@@ -117,6 +120,8 @@ private slots:
 
     void on_checkBox_clicked();
 
+
+
 private:
     Ui::ChatRoom *ui;
     mySocktes socket;
@@ -126,6 +131,7 @@ private:
     editContact *edits;
     ContactActions *actions;
     QString myphoneNumber;
+    QString myProfile;
     QSystemTrayIcon *pop;
     passwordSettingAndCode *settingupsecurity;
 

@@ -580,6 +580,23 @@ bool DBFunctions::checkSecuritySettingTwo()
     return false;
 }
 
+QString DBFunctions::fetchAvailableIpAddressServer()
+{
+    QDir dir;
+    QString file = dir.absoluteFilePath("storage/ipAdress.txt");
+
+    QFile my(file);
+    my.open(QIODevice::ReadOnly);
+    if(my.isOpen())
+    {
+        QTextStream in(&my);
+        QString line =in.readAll();
+        my.close();
+        return line;
+    }
+    return nullptr;
+}
+
 
 
 

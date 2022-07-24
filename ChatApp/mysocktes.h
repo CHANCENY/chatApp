@@ -18,6 +18,8 @@ public:
    explicit mySocktes(QObject *parent = nullptr);
     bool sendingMessages(QByteArray mData);
     void writeReciever(QByteArray data);
+    QByteArray getMessage();
+    void clearip();
 
 
 public slots:

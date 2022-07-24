@@ -45,6 +45,7 @@ public:
     QString onActiveUpdatingChat(QString number);
     bool checkSecuritySetting();
     bool checkSecuritySettingTwo();
+    QString fetchAvailableIpAddressServer();
 
 };
 

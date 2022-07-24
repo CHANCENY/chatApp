@@ -76,3 +76,10 @@ void loginpage::on_pushButton_clicked()
     }
 }
 
+
+void loginpage::on_pushButton_2_clicked()
+{
+   forgot = new forgotpassword(0,*this->phone);
+   forgot->show();
+}
+

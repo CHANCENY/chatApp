@@ -8,6 +8,7 @@
 #include "steptwo.h"
 #include "chatroom.h"
 #include "dbfunctions.h"
+#include "forgotpassword.h"
 
 namespace Ui {
 class loginpage;
@@ -24,11 +25,14 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void on_pushButton_2_clicked();
+
 private:
     Ui::loginpage *ui;
     const QString *phone;
     StepTwo *toTwo;
     ChatRoom *toChat;
+    forgotpassword *forgot;
 
 
     bool login(QString password);

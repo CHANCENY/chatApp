@@ -1,7 +1,10 @@
 #include "mythread.h"
 #include "dbfunctions.h"
 #include <QSplashScreen>
-
+#include <QTcpSocket>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
 
 myThread::myThread()
 {
@@ -11,16 +14,25 @@ myThread::myThread()
 void myThread::run()
 {
   qDebug()<<this->currentThread()<<" has started.."; 
-  this->connection();
-  this->collectingIps();
-  qDebug()<<"done ";
 
+  if(this->flag == 2)
+  {
+      this->connection();
+      this->collectingIps();
+      qDebug()<<"done ";
+  }
+  else if(this->flag == 1)
+  {
+    this->ipAddress = this->ipFound();
+    qDebug()<<"done "<<this->ipAddress;
+    this->getFoundIp();
+  }
 }
 
 void myThread::connection()
 {
  QSqlDatabase mdbs = QSqlDatabase::addDatabase("QSQLITE");
- mdbs.setDatabaseName("DATABASE.db");
+ mdbs.setDatabaseName("storage/DATABASE.db");
  mdbs.open();
 
 }
@@ -28,90 +40,86 @@ void myThread::connection()
 void myThread::collectingIps()
 {
     QList<QHostAddress> list = QNetworkInterface::allAddresses();
+    QString myglobalip = nullptr;
+    QStringList ipmade;
 
-    QString ipAddress = nullptr;
-
-    QStringList ipMadeUp;
+    qDebug()<<list;
+    // finding global ip
 
     foreach(QHostAddress line, list)
     {
       if(line.isGlobal())
       {
-          ipAddress = line.toString();
+          myglobalip = line.toString();
       }
     }
 
-    int flag = 0;
+    //spit the ip address at .
 
-    if(ipAddress != nullptr)
+    QStringList myipparts = myglobalip.split('.');
+
+    //check if list has been made after split
+
+    if(myipparts.isEmpty())
     {
-        DBFunctions ips;
-        QStringList dbips = ips.getIpAddress();
+        return;
+    }
 
-        if(dbips.isEmpty())
-        {
-            flag = -2;
-        }
+    // first and second part of ip
+    QString first = myipparts.first();
+    QString second = myipparts[1];
 
-        foreach(QString ipline, dbips)
+    //getting number at pos 3 and 4
+
+    int third = myipparts[2].toInt() + 1 * 10;
+    int fourth = myipparts.last().toInt() + 1 * 10;
+    qDebug()<<third<<fourth;
+    // check if first and second varable are not empty
+
+    if(first != nullptr && second != nullptr)
+    {
+
+        //generate ip address third position up to 100 and last position upto 100
+
+        for(int i = 1; i <= third; i++)
         {
-            if(ipAddress == ipline)
+            for(int j = 1; j <= fourth; j++)
             {
-                flag = 0;
-                qDebug()<<"All set";
-                return;
+                //joining all part here
+                QString ip = first+"."+second+"."+QString::number(i)+"."+QString::number(j);
+                ipmade.append(ip);
             }
-            flag = -1;
-        }
-
-        if(flag < 0)
-        {
-          QString first = ipAddress.split('.').first();
-          QString second = ipAddress.split('.')[1];
-
-          for(int i = 0; i <= 10; i++)
-          {
-              for(int j = 0; j <=10; j++)
-              {
-                  QString madeip = first+"."+second+"."+QString::number(i)+"."+QString::number(j);
-                  ipMadeUp.append(madeip);
-
-                  if(j == 10 && i == 10)
-                  {
-                      flag = 2;
-                  }
-              }
-          }
         }
     }
+
+   //check if ipmade is not null
+
+    if(ipmade.isEmpty())
+    {
+        return;
+    }
+
+    //save all made ips into network table of database for later use
+
+    QSqlQuery query;
     int counter = 0;
-    if(flag == 2)
+
+    for(int i = 0; i < ipmade.size(); i++)
     {
-        QSqlQuery query;
-        for(int i = 0; i < ipMadeUp.size(); i++)
+        query.prepare("INSERT INTO network VALUES('"+ipmade[i]+"');");
+        if(query.exec())
         {
-             query.prepare("INSERT INTO network values('"+ipMadeUp[i]+"');");
-             if(query.exec())
-             {
-                counter++;
-             }
+            counter++;
         }
     }
 
+    //check if all ips have been saved
 
-    if(counter == ipMadeUp.size())
+    if(counter == ipmade.size())
     {
-         qDebug()<<"done .... threading";
-        /* QSqlDatabase d = QSqlDatabase::addDatabase("QSQLITE");
-         d.setDatabaseName("DATABASE.db");
-         d.open();
-         d.close();
-         d = QSqlDatabase();
-         QSqlDatabase::removeDatabase("DATABASE.db");*/
-         return;
+        qDebug()<<"thread is done making ip addresses ";
+        return;
     }
-
-
 }
 
 bool myThread::settingNetworkCheck()
@@ -129,4 +137,61 @@ bool myThread::settingNetworkCheck()
       }
   }
   return false;
+}
+
+void myThread::flagging(int x)
+{
+    this->flag = x;
+}
+
+QString myThread::ipFound()
+{
+
+    QTcpSocket *sock = new QTcpSocket(0);
+    qDebug()<<"here 1"<<ips.size();
+    int x = this->ips.size();
+    for(int i = 0; i < x; i++)
+    {
+        qDebug()<<"here 2"<<this->ips.size()<<i;
+        sock->connectToHost(this->ips[i],8888);
+        if(sock->waitForConnected(1000))
+        {
+            sock->close();
+            return this->ips[i];
+        }
+        else
+        {
+            qDebug()<<this->ips[i]<< "Checked";
+            if(i == this->ips.size())
+            {
+                return "127.0.0.1";
+            }
+            qDebug()<<"here 3"<<this->ips.size()<<i;
+            continue;
+        }
+    }
+    sock->deleteLater();
+    return "127.0.0.1";
+
+}
+
+QString myThread::getFoundIp()
+{
+   QDir dir;
+   QString file = dir.absoluteFilePath("storage/ipAdress.txt");
+
+   QFile my(file);
+   my.open(QIODevice::WriteOnly|QFile::Text);
+   if(my.isOpen())
+   {
+       QTextStream out(&my);
+       out<<this->ipAddress;
+       my.flush();
+       my.close();
+   }
+}
+
+void myThread::collectall(QStringList list)
+{
+  this->ips = list;
 }

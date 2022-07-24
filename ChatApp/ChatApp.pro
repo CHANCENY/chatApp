@@ -15,6 +15,7 @@ SOURCES += \
     contactactions.cpp \
     dbfunctions.cpp \
     editcontact.cpp \
+    forgotpassword.cpp \
     loginpage.cpp \
     main.cpp \
     mydatabase.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     contactactions.h \
     dbfunctions.h \
     editcontact.h \
+    forgotpassword.h \
     loginpage.h \
     mydatabase.h \
     mysocktes.h \
@@ -51,6 +53,7 @@ FORMS += \
     chatroom.ui \
     contactactions.ui \
     editcontact.ui \
+    forgotpassword.ui \
     loginpage.ui \
     networkdilog.ui \
     options.ui \

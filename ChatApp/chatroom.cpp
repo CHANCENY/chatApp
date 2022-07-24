@@ -33,6 +33,7 @@ QTimer *newonesfound;
 QString messageArrived = nullptr, title = nullptr;
 static int flagmade = 0;
 static int clickednow = 0;
+static int states = 0;
 
 bool change = false;
 
@@ -69,6 +70,7 @@ ChatRoom::ChatRoom(QWidget *parent, QString profile, QString phone, QString full
         ui->profile->setPixmap(pro);
         QIcon con(profile);
         ui->tabWidget->setTabIcon(2,con);
+        this->myProfile = profile;
     }
 
     ui->name->setText(fullname);
@@ -123,8 +125,12 @@ ChatRoom::ChatRoom(QWidget *parent, QString profile, QString phone, QString full
       connect(newonesfound,SIGNAL(timeout()),this,SLOT(onActiveUpdate()));
       newonesfound->start(1000);
 
-      this->myProfileAccount();
+      QTimer *socketstatus = new QTimer(this);
+      connect(socketstatus,SIGNAL(timeout()),this,SLOT(statuscheck()));
+      socketstatus->start(1000);
 
+
+      this->myProfileAccount();
 
 }
 
@@ -278,11 +284,11 @@ void ChatRoom::displayMessages(QString messages)
          // ui->messagedisplay->addItem(lines[0]);
           if(lines[1] == "rec")
           {
-             ui->messagedisplay->addItem(new QListWidgetItem(QIcon(":/ic/icons/icons8-inbox-32.png"),lines[0]+"\n"+lines.last()));
+             ui->messagedisplay->addItem(new QListWidgetItem(QIcon(":/ic/icons/icons8-inbox-32.png"),lines[0]+"\n"+this->removeAllSpecial2(lines.last())));
           }
           if(lines[1] == "sec")
           {
-             ui->messagedisplay->addItem(new QListWidgetItem(QIcon(":/ic/icons/icons8-sent-48.png"),lines[0]+"\n"+lines.last()));
+             ui->messagedisplay->addItem(new QListWidgetItem(QIcon(":/ic/icons/icons8-sent-48.png"),lines[0]+"\n"+this->removeAllSpecial2(lines.last())));
 
           }
       }
@@ -499,13 +505,52 @@ void ChatRoom::onActiveUpdate()
    QString bodyMessages = newones.onActiveUpdatingChat(numberfound);
    if(bodyMessages != nullptr)
    {
-      this->displayMessages(bodyMessages);
+      this->displayMessages(this->removeAllSpecial2(bodyMessages));
        messageArrived ="New Message Arrived "+ currentText;
        title = "New Messages Notification!";
        ui->messagedisplay->scrollToBottom();
        bodyMessages = nullptr;
 
    }
+}
+
+void ChatRoom::statuscheck()
+{
+   QByteArray result = socket.getMessage();
+   std::string n = result.toStdString();
+   ui->status->setText(QString::fromStdString(n));
+}
+
+QString ChatRoom::removeAllSpecial(QString line)
+{
+  if(line != nullptr)
+  {
+      for(int i = 0; i < line.length(); i++)
+      {
+          if(line[i] == '@')
+          {
+              line[i] = '^';
+          }
+      }
+      return line;
+  }
+  return nullptr;
+}
+
+QString ChatRoom::removeAllSpecial2(QString line)
+{
+    if(line != nullptr)
+    {
+        for(int i = 0; i < line.length(); i++)
+        {
+            if(line[i] == '^')
+            {
+                line[i] = '@';
+            }
+        }
+        return line;
+    }
+    return nullptr;
 }
 
 void ChatRoom::popNotification()
@@ -523,7 +568,7 @@ void ChatRoom::popNotification()
 
 void ChatRoom::on_pushButton_clicked()
 {
-   QString messages = ui->messagesToSend->toPlainText();
+   QString messages =this->removeAllSpecial(ui->messagesToSend->toPlainText());
    QString tobeSendMessage = messages;
    messages = messages.trimmed();
 
@@ -551,14 +596,14 @@ void ChatRoom::on_pushButton_clicked()
            QString pend = numberfound+"->"+myNumber+"->"+myName+"->"+dates+"->"+tobeSendMessage;
            rcheck.pendingToSend(pend);
 
-           QString body = dates+"->sec->"+tobeSendMessage;
+           QString body = dates+"->sec->"+this->removeAllSpecial2(tobeSendMessage);
 
            QStringList mmm; mmm.append(numberfound); mmm.append(myNumber); mmm.append(myName);
            mmm.append(dates); mmm.append("Old"); mmm.append(body);
 
            if(rcheck.saveMessagesLocal(mmm))
            {               
-               ui->messagedisplay->addItem(new QListWidgetItem(QIcon(":/ic/icons/icons8-sent-48.png"),dates+"\n"+tobeSendMessage));
+               ui->messagedisplay->addItem(new QListWidgetItem(QIcon(":/ic/icons/icons8-sent-48.png"),dates+"\n"+this->removeAllSpecial2(tobeSendMessage)));
                ui->messagedisplay->scrollToBottom();
                ui->messagesToSend->clear();
                ui->replydisplay->clear();
@@ -573,14 +618,14 @@ void ChatRoom::on_pushButton_clicked()
        }
        else if(s == true)
        {
-           QString body = dates+"->sec->"+tobeSendMessage;
+           QString body = dates+"->sec->"+this->removeAllSpecial2(tobeSendMessage);
 
            QStringList mmm; mmm.append(numberfound); mmm.append(myNumber); mmm.append(myName);
            mmm.append(dates); mmm.append("Old"); mmm.append(body);
 
            if(rcheck.saveMessagesLocal(mmm))
            {
-              ui->messagedisplay->addItem(new QListWidgetItem(QIcon(":/ic/icons/icons8-sent-48.png"),dates+"\n"+tobeSendMessage));
+              ui->messagedisplay->addItem(new QListWidgetItem(QIcon(":/ic/icons/icons8-sent-48.png"),dates+"\n"+this->removeAllSpecial2(tobeSendMessage)));
               ui->messagedisplay->scrollToBottom();
               ui->messagesToSend->clear();
               ui->replydisplay->clear();
@@ -612,6 +657,16 @@ void ChatRoom::on_messagesToSend_textChanged()
        recenttimer->stop();
        pendingSender->stop();
        contactschecker->stop();
+
+       for(int i = 0; i < text.length(); i++)
+       {
+           if(text[i] == '^')
+           {
+               text[i] = ' ';
+               ui->messagesToSend->clear();
+               ui->messagesToSend->insertPlainText(text);
+           }
+       }
    }
    else
    {
@@ -1078,7 +1133,20 @@ void ChatRoom::on_lineEdit_3_returnPressed()
 
 
 void ChatRoom::on_deleteallbuttonmenu_clicked()
-{       
+{
+        QStringList images;
+        QSqlQuery query;
+        query.prepare("SELECT photo FROM contacts;");
+        if(query.exec())
+        {
+            while(query.next())
+            {
+               images.append(query.value(0).toString());
+            }
+        }
+
+        images.append(this->myProfile);
+
         QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
         db.setDatabaseName("DATABASE.db");
         db.open();
@@ -1090,20 +1158,17 @@ void ChatRoom::on_deleteallbuttonmenu_clicked()
            if(db.connectionName().isEmpty())
            {
                QFile::remove("DATABASE.db");
+               QFile::remove("storage/DATABASE.db");
+               QFile::remove("storage/ipAdress.txt");
                QFile::remove("DATA");
 
-               QDir dir;
-               QString dire = dir.currentPath();
-
-               if(dir.cd(dire+"/PicturesUploaded"))
+               for(int i = 0; i < images.size(); i++)
                {
-                   QStringList list = dir.entryList();
-
-                   foreach(QString line, list)
-                   {
-                       QFile::remove(line);
-                   }
+                   QFile::remove(images[i]);
                }
+               QDir dir;
+               dir.rmdir("PicturesUploaded");
+               dir.rmdir("storage");
                this->close();
            }
 
@@ -1277,4 +1342,5 @@ bool ChatRoom::checkingNotificationbox(QString note)
     }
     return false;
 }
+
 
