@@ -42,6 +42,7 @@ bool mySocktes::sendingMessages(QByteArray mData)
     {
         DBFunctions i;
         ipfound = i.fetchAvailableIpAddressServer();
+        thread->deleteLater();
         return false;
     }
 
@@ -67,10 +68,10 @@ bool mySocktes::sendingMessages(QByteArray mData)
                socket->close();
                return false;
            }
-
+        thread->deleteLater();
        }
 
-       socket->connectToHost(ipfound,8888);
+       socket->connectToHost(ipfound,9846);
        if(socket->waitForConnected(1000))
        {
            socket->write(mData);
@@ -124,31 +125,31 @@ QByteArray mySocktes::getMessage()
 {
   if(socket->state() == 0)
    {
-      return "The socket is not connected.";
+      return ":/ic/icons/cloud-computing.png";
    }
    if(socket->state() == 1)
    {
-      return "The socket is performing a host name lookup.";
+      return ":/ic/icons/computing-cloud.png";
    }
    if(socket->state() == 2)
    {
-      return "he socket has started establishing a connection.";
+      return ":/ic/icons/computing-cloud.png";
    }
    if(socket->state() == 3)
    {
-      return "A connection is established.";
+      return ":/ic/icons/computing-cloud.png";
    }
    if(socket->state() == 4)
    {
-      return "The socket is bound to an address and port.";
+      return ":/ic/icons/link.png";
    }
    if(socket->state() == 6)
    {
-      return "The socket is about to close (data may still be waiting to be written).";
+      return ":/ic/icons/link.png";
    }
    if(socket->state() == 6)
    {
-      return "For internal use only.";
+      return ":/ic/icons/link.png";
    }
    return socket->errorString().toLocal8Bit();
 

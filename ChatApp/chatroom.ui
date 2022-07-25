@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>603</width>
-    <height>614</height>
+    <height>634</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>ChatApp</string>
   </property>
   <property name="styleSheet">
    <string notr="true">color: rgb(0, 0, 0);
@@ -199,7 +199,7 @@ background-color: rgb(255, 255, 255);</string>
          <x>10</x>
          <y>60</y>
          <width>121</width>
-         <height>361</height>
+         <height>331</height>
         </rect>
        </property>
        <property name="styleSheet">
@@ -251,6 +251,24 @@ font: 10pt &quot;Arial&quot;;</string>
        </property>
        <property name="text">
         <string/>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>390</y>
+         <width>31</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/ic/icons/speaker-filled-audio-tool.png</normalon>
+        </iconset>
        </property>
       </widget>
      </widget>
@@ -893,6 +911,45 @@ background-color: rgb(255, 255, 255);</string>
          <string>Notification</string>
         </property>
        </widget>
+       <widget class="QLabel" name="label_5">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>280</y>
+          <width>101</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>pop notification</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_2">
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>320</y>
+          <width>78</width>
+          <height>22</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Enabled</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_6">
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>320</y>
+          <width>101</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>voice notification</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </widget>
@@ -992,8 +1049,8 @@ font: 10pt &quot;Arial&quot;;</string>
      <rect>
       <x>10</x>
       <y>535</y>
-      <width>571</width>
-      <height>21</height>
+      <width>51</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="text">
@@ -1003,7 +1060,7 @@ font: 10pt &quot;Arial&quot;;</string>
      <bool>true</bool>
     </property>
     <property name="alignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
   </widget>

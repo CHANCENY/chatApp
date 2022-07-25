@@ -6,6 +6,8 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDir>
+#include <QTextToSpeech>
+
 
 
 
@@ -41,6 +43,7 @@ bool change = false;
 QString querytochangenumber1, querytochangenumber2, newphonenumber;
 
 QString noteSetting = nullptr;
+QString voiceSettingnote = nullptr;
 
 
 
@@ -49,9 +52,14 @@ ChatRoom::ChatRoom(QWidget *parent, QString profile, QString phone, QString full
     ui(new Ui::ChatRoom)
 {
     ui->setupUi(this);
+
+    DBFunctions connection;
+    connection.connectionSetUp();
+
     ui->replydisplay->setVisible(false);
     ui->messagesToSend->setVisible(false);
     ui->pushButton->setVisible(false);
+    ui->pushButton_2->setVisible(false);
 
     //for available people
     ui->addcontact->setVisible(false);
@@ -264,6 +272,7 @@ void ChatRoom::on_recentchat_clicked(const QModelIndex &index)
             ui->conersation->setText("<font color='red'>Conversation with "+currentText+"</font>");
             ui->messagesToSend->setVisible(true);
             ui->pushButton->setVisible(true);
+            ui->pushButton_2->setVisible(true);
         }
     }
 }
@@ -518,7 +527,8 @@ void ChatRoom::statuscheck()
 {
    QByteArray result = socket.getMessage();
    std::string n = result.toStdString();
-   ui->status->setText(QString::fromStdString(n));
+   QPixmap status(QString::fromStdString(n));
+   ui->status->setPixmap(status);
 }
 
 QString ChatRoom::removeAllSpecial(QString line)
@@ -562,7 +572,18 @@ void ChatRoom::popNotification()
       pop->setVisible(true);
       pop->showMessage(title,messageArrived,QIcon(":/ic/icons/chat.png"),10000);
       messageArrived = nullptr;
-      clickednow = 0;
+
+  }
+
+  if(messageArrived != nullptr && voiceSettingnote == "On")
+  {
+     QTextToSpeech *speaker = new QTextToSpeech;
+     speaker->setVolume(100);
+     speaker->say(messageArrived);
+     if(speaker->state() != 1)
+     {
+         messageArrived = nullptr;
+     }
   }
 }
 
@@ -1270,28 +1291,6 @@ void ChatRoom::on_IpAddressLineeditmenu_returnPressed()
 }
 
 
-void ChatRoom::on_checkBox_clicked()
-{
-   if(noteSetting == "On")
-   {
-       if(this->checkingNotificationbox("Off"))
-       {
-           ui->checkBox->setChecked(false);
-           ui->checkBox->setCheckable(true);
-           noteSetting = "Off";
-       }
-   }
-   else
-   {
-       if(this->checkingNotificationbox("On"))
-       {
-           ui->checkBox->setChecked(true);
-           ui->checkBox->setCheckable(true);
-           noteSetting = "On";
-       }
-   }
-}
-
 void ChatRoom::noteSettingChecker()
 {
     QSqlQuery query;
@@ -1301,6 +1300,7 @@ void ChatRoom::noteSettingChecker()
         while(query.next())
         {
             noteSetting = query.value(0).toString();
+            voiceSettingnote = query.value(1).toString();
         }
     }
 
@@ -1309,7 +1309,14 @@ void ChatRoom::noteSettingChecker()
         ui->checkBox->setChecked(true);
         ui->checkBox->setCheckable(true);
     }
+
+    if(voiceSettingnote == "On")
+    {
+        ui->checkBox_2->setChecked(true);
+        ui->checkBox_2->setCheckable(true);
+    }
 }
+
 
 bool ChatRoom::checkingNotificationbox(QString note)
 {
@@ -1321,6 +1328,7 @@ bool ChatRoom::checkingNotificationbox(QString note)
         while(query.next())
         {
             old = query.value(0).toString();
+
         }
     }
 
@@ -1343,4 +1351,61 @@ bool ChatRoom::checkingNotificationbox(QString note)
     return false;
 }
 
+
+void ChatRoom::on_checkBox_clicked(bool checked)
+{
+    if(checked == true)
+    {
+        QSqlQuery query;
+        query.prepare("UPDATE notification SET status = 'On' WHERE status = 'Off';");
+        if(query.exec())
+        {
+            noteSetting = "On";
+        }
+    }
+    else
+    {
+        QSqlQuery query;
+        query.prepare("UPDATE notification SET status = 'Off' WHERE status = 'On';");
+        if(query.exec())
+        {
+            noteSetting = "Off";
+        }
+    }
+}
+
+
+void ChatRoom::on_checkBox_2_clicked(bool checked)
+{
+    if(checked == true)
+    {
+        QSqlQuery query;
+        query.prepare("UPDATE notification SET voice = 'On' WHERE voice = 'Off';");
+        if(query.exec())
+        {
+            voiceSettingnote = "On";
+        }
+    }
+    else
+    {
+        QSqlQuery query;
+        query.prepare("UPDATE notification SET voice = 'Off' WHERE voice = 'On';");
+        if(query.exec())
+        {
+            voiceSettingnote = "Off";
+        }
+    }
+}
+
+
+void ChatRoom::on_pushButton_2_clicked()
+{
+    QString tosend = ui->messagesToSend->toPlainText();
+    if(tosend != nullptr)
+    {
+        QTextToSpeech * s = new QTextToSpeech;
+        s->setVolume(100);
+        s->say(tosend);
+    }
+}
 

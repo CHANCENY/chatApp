@@ -82,10 +82,11 @@ void DBFunctions::tablesMaker()
    if(flag == 6)
    {
        QSqlQuery query;
-       query.prepare("CREATE TABLE notification(status varchar(5));");
+       query.prepare("CREATE TABLE notification(status varchar(5), voice varchar(5));");
        if(query.exec())
        {
-            return;
+           query.prepare("INSERT INTO notification VALUES('Off','Off');");
+           query.exec();
        }
 
    }

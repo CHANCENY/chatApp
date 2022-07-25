@@ -2,6 +2,7 @@
 #include "ui_options.h"
 #include <QDebug>
 #include <QPlainTextEdit>
+#include <QTextToSpeech>
 
 
 Options::Options(QWidget *parent, QString current, int last, int row, QString number) :
@@ -43,4 +44,12 @@ void Options::on_pushButton_4_clicked()
     }
 }
 
+void Options::on_pushButton_2_clicked()
+{
+   QTextToSpeech *speaking = new QTextToSpeech;
+   speaking->setVolume(100);
+   QVoice voice;
+   speaking->say(this->currentText);
+   this->close();
+}
 

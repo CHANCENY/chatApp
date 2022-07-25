@@ -118,9 +118,12 @@ private slots:
 
     void on_IpAddressLineeditmenu_returnPressed();
 
-    void on_checkBox_clicked();
 
+    void on_checkBox_clicked(bool checked);
 
+    void on_checkBox_2_clicked(bool checked);
+
+    void on_pushButton_2_clicked();
 
 private:
     Ui::ChatRoom *ui;

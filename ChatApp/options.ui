@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>ChatApp</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(255, 255, 255);</string>
@@ -68,7 +68,12 @@ color:white;
 border-collapse:collaspe;</string>
     </property>
     <property name="text">
-     <string>Copy</string>
+     <string>Play</string>
+    </property>
+    <property name="icon">
+     <iconset>
+      <normalon>:/ic/icons/speaker-filled-audio-tool.png</normalon>
+     </iconset>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_4">
