@@ -30,7 +30,7 @@ QString interClass::saveSentMessages(QString messages)
 
 QString interClass::sendnewMessages(QString number)
 {
-  this->connection();
+ this->connection();
   QString sender = nullptr;
   QString line;
   QString body;
@@ -73,7 +73,7 @@ QString interClass::sendnewMessages(QString number)
 
 QString interClass::saviPendingMessages(QString message)
 {
-  this->connection();
+   this->connection();
   if(message != nullptr)
   {
       QStringList mList = message.split("%%%");

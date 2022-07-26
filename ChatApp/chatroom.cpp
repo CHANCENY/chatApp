@@ -707,7 +707,7 @@ void ChatRoom::on_messagedisplay_clicked(const QModelIndex &index)
          int position = ui->messagedisplay->currentRow();
          int last = ui->messagedisplay->count();
 
-         op = new Options(0,currentText, last,position,numberfound);
+         op = new Options(this,currentText, last,position,numberfound);
          op->show();
 
      }

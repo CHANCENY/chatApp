@@ -3,7 +3,7 @@
 myClient::myClient(QObject *parent)   : QTcpSocket{parent}
 {
     pool = new QThreadPool(this);
-    pool->setMaxThreadCount(20);
+    pool->setMaxThreadCount(10);
 }
 
 void myClient::setSocket(int descriptor)
@@ -64,8 +64,8 @@ void myClient::readyRead()
            mytask *task = new mytask();
           task->setAutoDelete(true);
           connect(task,SIGNAL(Result(QByteArray)),this,SLOT(taskResult(QByteArray)),Qt::QueuedConnection);
-         // pool->start(task);
-          QThreadPool::globalInstance()->start(task);
+          pool->start(task);
+          //QThreadPool::globalInstance()->start(task);
           }
 }
 

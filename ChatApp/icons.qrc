@@ -25,5 +25,6 @@
         <file>icons/computing-cloud.png</file>
         <file>icons/link.png</file>
         <file>icons/speaker-filled-audio-tool.png</file>
+        <file>icons/chat.ico</file>
     </qresource>
 </RCC>

@@ -13,18 +13,16 @@ myThread::myThread()
 
 void myThread::run()
 {
-  qDebug()<<this->currentThread()<<" has started.."; 
 
   if(this->flag == 2)
   {
       this->connection();
       this->collectingIps();
-      qDebug()<<"done ";
+
   }
   else if(this->flag == 1)
   {
-    this->ipAddress = this->ipFound();
-    qDebug()<<"done "<<this->ipAddress;
+    this->ipAddress = this->ipFound();    
     this->getFoundIp();
   }
 }
@@ -43,7 +41,7 @@ void myThread::collectingIps()
     QString myglobalip = nullptr;
     QStringList ipmade;
 
-    qDebug()<<list;
+
     // finding global ip
 
     foreach(QHostAddress line, list)
@@ -73,7 +71,7 @@ void myThread::collectingIps()
 
     int third = myipparts[2].toInt() + 1 * 10;
     int fourth = myipparts.last().toInt() + 1 * 10;
-    qDebug()<<third<<fourth;
+
     // check if first and second varable are not empty
 
     if(first != nullptr && second != nullptr)
@@ -117,7 +115,7 @@ void myThread::collectingIps()
 
     if(counter == ipmade.size())
     {
-        qDebug()<<"thread is done making ip addresses ";
+
         return;
     }
 }
@@ -148,12 +146,12 @@ QString myThread::ipFound()
 {
 
     QTcpSocket *sock = new QTcpSocket(0);
-    qDebug()<<"here 1"<<ips.size();
+
     int x = this->ips.size();
     for(int i = 0; i < x; i++)
     {
-        qDebug()<<"here 2"<<this->ips.size()<<i;
-        sock->connectToHost(this->ips[i],8888);
+
+        sock->connectToHost(this->ips[i],8889);
         if(sock->waitForConnected(1000))
         {
             sock->close();
@@ -161,12 +159,12 @@ QString myThread::ipFound()
         }
         else
         {
-            qDebug()<<this->ips[i]<< "Checked";
+
             if(i == this->ips.size())
             {
                 return "127.0.0.1";
             }
-            qDebug()<<"here 3"<<this->ips.size()<<i;
+
             continue;
         }
     }

@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include "myserver.h"
+#include "interclass.h"
 
 
 int main(int argc, char *argv[])

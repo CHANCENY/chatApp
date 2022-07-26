@@ -11,14 +11,14 @@ QString myServer::startServer()
 
     //int port = portFinder().toInt();
 
-    if(!this->listen(QHostAddress::Any,8888))
+    if(!this->listen(QHostAddress::Any,8889))
     {
         qDebug()<<"server not listening ....";
         return nullptr;
     }
     else
     {
-          qDebug()<<"----SERVER LISTENING AT PORT "<<8888;
+          qDebug()<<"----SERVER LISTENING AT PORT "<<8889;
           return "true";
     }
      return nullptr;
@@ -72,6 +72,7 @@ void myServer::incomingConnection(qintptr handle)
 
        myClient *client = new myClient(this);
        client->setSocket(handle);
+
 
        qDebug()<<handle<<" connection established successfully....";
 }

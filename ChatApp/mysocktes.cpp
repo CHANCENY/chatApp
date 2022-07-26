@@ -42,7 +42,7 @@ bool mySocktes::sendingMessages(QByteArray mData)
     {
         DBFunctions i;
         ipfound = i.fetchAvailableIpAddressServer();
-        thread->deleteLater();
+
         return false;
     }
 
@@ -58,20 +58,20 @@ bool mySocktes::sendingMessages(QByteArray mData)
            // when all sudden server went off it will not waitfor bytewritten
            if(socket->state() == 3)
            {
-               qDebug()<<"waitbytewritten";
+
                socket->waitForBytesWritten(3000);
                 return true;
            }
            else
            {
-               qDebug()<<"disconnecting";
+
                socket->close();
                return false;
            }
-        thread->deleteLater();
+
        }
 
-       socket->connectToHost(ipfound,9846);
+       socket->connectToHost(ipfound,8889);
        if(socket->waitForConnected(1000))
        {
            socket->write(mData);
@@ -79,13 +79,13 @@ bool mySocktes::sendingMessages(QByteArray mData)
            // when all sudden server went off it will not waitfor bytewritten
            if(socket->state() == 3)
            {
-               qDebug()<<"waitbytewritten";
+
                socket->waitForBytesWritten(3000);
                 return true;
            }
            else
            {
-               qDebug()<<"disconnecting ";
+
                socket->close();
                return false;
            }
@@ -93,14 +93,13 @@ bool mySocktes::sendingMessages(QByteArray mData)
        }
        else
        {
-           qDebug()<<"clear found ip";
+
            ipfound.clear();
            this->clearip();
            lock = 0;
            return false;
        }
     }
- thread->deleteLater();
  return false;
 }
 
@@ -174,9 +173,8 @@ void mySocktes::clearip()
 void mySocktes::readyRead()
 {
     QByteArray data = socket->readAll();    
-    writeReciever(data);
-    qDebug()<<"incoming message...."+data;
-    socket->close();
+    writeReciever(data);   
+    //socket->close();
 }
 
 
